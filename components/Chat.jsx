@@ -10,18 +10,12 @@ const Chat = () => {
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
-    // Get current socket ID
-    const mySocketId = socket.id;
-
-    // Listen for incoming messages
+    // Listen for incoming messages (from other users)
     socket.on('message', (message) => {
-      // Only add message if it's not from this client
-      if (message.senderId !== mySocketId) {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          { text: message.text, isOwn: false },
-        ]);
-      }
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: message, isOwn: false },
+      ]);
     });
 
     // Listen for active users count
@@ -29,7 +23,7 @@ const Chat = () => {
       setActiveUsers(count);
     });
 
-    // Handle socket ID assignment after connection
+    // Optional: Log connection for debugging
     socket.on('connect', () => {
       console.log('Connected with socket ID:', socket.id);
     });
@@ -56,7 +50,7 @@ const Chat = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg flex flex-col h-[80vh]">
+    <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg flex flex-col h-[90vh]">
       {/* Chat Header */}
       <div className="bg-blue-500 text-white p-4 rounded-t-lg flex justify-between items-center">
         <h2 className="text-lg font-semibold">Global Chat</h2>
@@ -90,18 +84,18 @@ const Chat = () => {
 
       {/* Input Area */}
       <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center">
           <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-            className="flex-1 p-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+            className="flex-1 p-2 border border-blue-500 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             placeholder="Type a message..."
           />
           <button
             onClick={sendMessage}
-            className="bg-blue-500 text-white p-2 px-4 rounded-r-lg hover:bg-blue-600 transition"
+            className="bg-blue-500 text-white p-2 px-4 border border-blue-500 rounded-r-lg hover:bg-blue-600 transition"
           >
             Send
           </button>
