@@ -7,9 +7,19 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [activeUsers, setActiveUsers] = useState(0);
-  const [name, setName] = useState(localStorage.getItem('chatName') || ''); // Load from localStorage
-  const [showNamePopup, setShowNamePopup] = useState(!localStorage.getItem('chatName')); // Show popup if no name
+  const [name, setName] = useState(''); // Load from localStorage
+  const [showNamePopup, setShowNamePopup] = useState(false); // Show popup if no name
   const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    const storedName = typeof window !== 'undefined' ? localStorage.getItem('chatName') : null;
+    if (storedName) {
+      setName(storedName);
+    } else {
+      setShowNamePopup(true); // Show popup if no name is found
+    }
+  }, []);
+
 
   useEffect(() => {
     // Listen for incoming messages
@@ -91,7 +101,7 @@ const Chat = () => {
     <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg flex flex-col h-[90vh]">
       {/* Chat Header */}
       <div className="bg-blue-500 text-white p-4 rounded-t-lg flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Global Chat ({name})</h2>
+        <h2 className="text-lg font-semibold">Global Chat </h2>
         <span className="bg-blue-700 px-3 py-1 rounded-full text-sm">
           {activeUsers} Active Users
         </span>
@@ -102,17 +112,24 @@ const Chat = () => {
         {messages.map((msg, index) => (
           <div
             key={index}
-            className={`flex mb-3 ${msg.isOwn ? 'justify-end' : 'justify-start'}`}
+            className={`flex mb-4 ${msg.isOwn ? 'justify-end' : 'justify-start'}`}
           >
-            <div
-              className={`max-w-xs p-3 rounded-lg shadow ${
-                msg.isOwn
+            <div className="max-w-xs">
+              <div
+                className={`p-3 rounded-lg shadow ${msg.isOwn
                   ? 'bg-blue-500 text-white'
                   : 'bg-white text-gray-800 border border-gray-200'
-              }`}
-            >
-              <span className="font-semibold">{msg.name}: </span>
-              {msg.text}
+                  }`}
+              >
+                {/* Name - Only show if not the sender, inside the box */}
+                {!msg.isOwn && (
+                  <div className="text-xs font-semibold text-gray-500 mb-1">
+                    {msg.name}
+                  </div>
+                )}
+                {/* Message */}
+                <p className="text-base">{msg.text}</p>
+              </div>
             </div>
           </div>
         ))}
@@ -128,7 +145,7 @@ const Chat = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
             className="flex-1 p-2 border border-blue-500 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            placeholder="Type a message..."
+            placeholder={`${name} Type a message...`}
           />
           <button
             onClick={sendMessage}

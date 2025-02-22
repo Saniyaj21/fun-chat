@@ -11,10 +11,12 @@ const MessageHistory = () => {
     const fetchMessages = async () => {
       try {
         const response = await fetch('https://fun-chat-server-hrde.onrender.com/api/messages/all');
+        
         if (!response.ok) {
           throw new Error('Failed to fetch messages');
         }
         const data = await response.json();
+        console.log(data);
         if (data.success) {
           setMessages(data.messages);
         } else {
@@ -65,13 +67,31 @@ const MessageHistory = () => {
           messages.map((msg) => (
             <div
               key={msg._id}
-              className="flex mb-3 justify-start"
+              className={`flex mb-4 justify-start'
+                }`}
             >
-              <div className="max-w-xs p-3 rounded-lg shadow bg-white text-gray-800 border border-gray-200">
-                <p>{msg.text}</p>
-                <span className="text-xs text-gray-500 block mt-1">
-                  {formatDate(msg.timestamp)}
-                </span>
+              <div className="max-w-xs">
+                <div
+                  className={`p-3 rounded-lg shadow bg-white text-gray-800 border border-gray-200'
+                    }`}
+                >
+                  {/* Name - Show for all messages */}
+                  <div
+                    className={`text-xs font-semibold mb-1 text-gray-500'
+                      }`}
+                  >
+                    {msg.name}  <span className='opacity-50'>[{formatDate(msg.timestamp)}]</span>
+                  </div>
+                  {/* Message */}
+                  <p className="text-base">{msg.text}</p>
+                  {/* Timestamp */}
+                  {/* <span
+                    className={`text-xs block mt-1 text-gray-500'
+                      }`}
+                  >
+                    {formatDate(msg.timestamp)}
+                  </span> */}
+                </div>
               </div>
             </div>
           ))
