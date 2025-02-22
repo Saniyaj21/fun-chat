@@ -12,9 +12,11 @@ const Chat = () => {
   useEffect(() => {
     // Listen for incoming messages (from other users)
     socket.on('message', (message) => {
+      console.log('Received message:', message); // Debug log
+      const messageText = typeof message === 'string' ? message : message.text || 'Invalid message';
       setMessages((prevMessages) => [
         ...prevMessages,
-        { text: message, isOwn: false },
+        { text: messageText, isOwn: false },
       ]);
     });
 
