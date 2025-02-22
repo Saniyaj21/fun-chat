@@ -52,7 +52,7 @@ const Chat = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg flex flex-col h-[90vh]">
+    <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg flex flex-col h-[80vh]">
       {/* Chat Header */}
       <div className="bg-blue-500 text-white p-4 rounded-t-lg flex justify-between items-center">
         <h2 className="text-lg font-semibold">Global Chat</h2>
