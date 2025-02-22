@@ -3,7 +3,7 @@ import React from 'react'
 
 const page = () => {
   return (
-    <div>
+    <div className='px-2'>
       <MessageHistory />
     </div>
   )
