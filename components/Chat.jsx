@@ -6,13 +6,22 @@ import socket from '../lib/socket';
 const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
-  const [activeUsers, setActiveUsers] = useState(0); // Active user count
+  const [activeUsers, setActiveUsers] = useState(0);
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
+    // Get current socket ID
+    const mySocketId = socket.id;
+
     // Listen for incoming messages
     socket.on('message', (message) => {
-      setMessages((prevMessages) => [...prevMessages, { text: message, isOwn: false }]);
+      // Only add message if it's not from this client
+      if (message.senderId !== mySocketId) {
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          { text: message.text, isOwn: false },
+        ]);
+      }
     });
 
     // Listen for active users count
@@ -20,10 +29,16 @@ const Chat = () => {
       setActiveUsers(count);
     });
 
+    // Handle socket ID assignment after connection
+    socket.on('connect', () => {
+      console.log('Connected with socket ID:', socket.id);
+    });
+
     // Cleanup on unmount
     return () => {
       socket.off('message');
       socket.off('activeUsers');
+      socket.off('connect');
     };
   }, []);
 
@@ -80,7 +95,7 @@ const Chat = () => {
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
             className="flex-1 p-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             placeholder="Type a message..."
           />
