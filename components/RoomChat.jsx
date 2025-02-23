@@ -129,7 +129,7 @@ const RoomChat = () => {
         <div className="flex space-x-2">
           
           <span className="bg-green-700 px-3 py-1 rounded-full text-sm">
-            {activeUsers} Online
+            {selectedRoom?.members?.length} Members
           </span>
         </div>
       </div>
