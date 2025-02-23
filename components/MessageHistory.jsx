@@ -101,7 +101,7 @@ const MessageHistory = () => {
                         className={`text-xs font-semibold mb-1 text-gray-500'
                           }`}
                       >
-                        Room: {msg.email}
+                        Email: {msg.email}
                       </div>
                     )
                   }
