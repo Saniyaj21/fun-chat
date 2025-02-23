@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import socket from '../lib/socket';
+import { FaGlobe } from 'react-icons/fa';
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
@@ -101,7 +102,7 @@ const Chat = () => {
     <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg flex flex-col h-[90vh]">
       {/* Chat Header */}
       <div className="bg-blue-500 text-white p-4 rounded-t-lg flex justify-between items-center">
-        <h2 className="text-lg font-semibold">Global Chat </h2>
+        <h2 className="text-lg font-semibold flex justify-center items-center gap-2"><FaGlobe className="text-xl" />Chat </h2>
         <span className="bg-blue-700 px-3 py-1 rounded-full text-sm">
           {activeUsers} Online
         </span>
