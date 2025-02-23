@@ -79,7 +79,7 @@ const Rooms = () => {
     <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg flex flex-col h-[90vh] mx-auto pt-2 px-2">
       {/* Header */}
       <div className="bg-blue-500 text-white p-4 rounded-t-lg">
-        <h2 className="text-lg font-semibold">{user?.primaryEmailAddress?.emailAddress || 'Your Rooms'}</h2>
+        <h2 className="text-lg font-semibold">Your Rooms</h2>
       </div>
 
       {/* Create Room Input */}
