@@ -9,10 +9,10 @@ const Navbar = () => {
                     href="/"
                     className=" w-1/3 py-2 rounded-md mx-1 hover:bg-blue-800 transition"
                 >
-                    <div className='flex justify-center items-center space-x-2 '>
+                    <div className='flex  flex-wrap  justify-center items-center space-x-2 '>
 
                         <FaGlobe className="text-xl" />
-                        <span className="hidden md:inline text-lg font-semibold">Global</span>
+                        <span className="md:inline text-sm font-semibold">Global</span>
 
                     </div>
                 </a>
@@ -21,10 +21,10 @@ const Navbar = () => {
                     href="/rooms"
                     className=" w-1/3 py-2 rounded-md  hover:bg-blue-800 transition"
                 >
-                    <div className='flex justify-center items-center space-x-2  border-l-2 border-r-2 border-white'>
+                    <div className='flex  flex-wrap  justify-center items-center space-x-2  border-l-2 border-r-2 border-white'>
 
                         <FaUsers className="text-xl" />
-                        <span className="hidden md:inline text-lg font-semibold">Rooms</span>
+                        <span className="md:inline text-sm font-semibold">Rooms</span>
                     </div>
                 </a>
 
@@ -35,10 +35,10 @@ const Navbar = () => {
                     href="/profile"
                     className=" w-1/3 py-2 rounded-md mx-1 hover:bg-blue-800 transition"
                 >
-                    <div className='flex justify-center items-center space-x-2 '>
+                    <div className='flex flex-wrap justify-center items-center space-x-2 '>
 
                         <FaUser className="text-xl" />
-                        <span className="hidden md:inline text-lg font-semibold">Profile</span>
+                        <span className="md:inline text-sm font-semibold">Profile</span>
                     </div>
                 </a>
 
