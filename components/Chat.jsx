@@ -8,8 +8,8 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [activeUsers, setActiveUsers] = useState(0);
-  const [name, setName] = useState(''); // Load from localStorage
-  const [showNamePopup, setShowNamePopup] = useState(false); // Show popup if no name
+  const [name, setName] = useState(''); // Empty initial state
+  const [showNamePopup, setShowNamePopup] = useState(false); // Default false
   const messagesEndRef = useRef(null);
 
   useEffect(() => {
@@ -17,39 +17,31 @@ const Chat = () => {
     if (storedName) {
       setName(storedName);
     } else {
-      setShowNamePopup(true); // Show popup if no name is found
+      setShowNamePopup(true); // Show popup only on client if no name
     }
-  }, []);
 
-
-  useEffect(() => {
-    // Listen for incoming messages
     socket.on('message', (message) => {
       setMessages((prevMessages) => [
         ...prevMessages,
-        { text: message.text, name: message.name, isOwn: message.name === name },
+        { text: message.text, name: message.name, isOwn: message.name === storedName },
       ]);
     });
 
-    // Listen for active users count
     socket.on('activeUsers', (count) => {
       setActiveUsers(count);
     });
 
-    // Optional: Log connection for debugging
     socket.on('connect', () => {
       console.log('Connected with socket ID:', socket.id);
     });
 
-    // Cleanup on unmount
     return () => {
       socket.off('message');
       socket.off('activeUsers');
       socket.off('connect');
     };
-  }, [name]); // Dependency on name to update isOwn correctly
+  }, []); // No dependency on name here, only initial setup
 
-  // Auto-scroll to the latest message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -57,21 +49,25 @@ const Chat = () => {
   const handleNameSubmit = (e) => {
     e.preventDefault();
     if (name.trim()) {
-      localStorage.setItem('chatName', name); // Save to localStorage
-      setShowNamePopup(false); // Hide popup
+      localStorage.setItem('chatName', name);
+      setShowNamePopup(false);
     }
   };
 
   const sendMessage = () => {
     if (input.trim() && name) {
-      const messageData = { text: input, name }; // Send name with message
+      const messageData = { text: input, name };
       socket.emit('message', messageData);
-      setMessages((prev) => [...prev, { text: input, name, isOwn: true }]); // Add own message locally
+      setMessages((prev) => [...prev, { text: input, name, isOwn: true }]);
       setInput('');
     }
   };
 
-  // If name popup is visible, show it instead of chat
+  // Render a loading state until client-side useEffect runs
+  // if (typeof window === 'undefined') {
+  //   return <div className="text-center p-4 text-blue-500">Loading...</div>;
+  // }
+
   if (showNamePopup) {
     return (
       <div className="fixed inset-0 bg-gray-800 bg-opacity-50 flex items-center justify-center">
@@ -100,15 +96,14 @@ const Chat = () => {
 
   return (
     <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg flex flex-col h-[80vh]">
-      {/* Chat Header */}
       <div className="bg-blue-500 text-white p-4 rounded-t-lg flex justify-between items-center">
-        <h2 className="text-lg font-semibold flex justify-center items-center gap-2"><FaGlobe className="text-xl" />Chat </h2>
-        <span className="bg-blue-700 px-3 py-1 rounded-full text-sm">
+        <h2 className="text-lg font-semibold flex justify-center items-center gap-2">
+          <FaGlobe className="text-xl" />Chat
+        </h2>
+        <span className="bg-green-700 px-3 py-1 rounded-full text-sm">
           {activeUsers} Online
         </span>
       </div>
-
-      {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
         {messages.map((msg, index) => (
           <div
@@ -117,18 +112,15 @@ const Chat = () => {
           >
             <div className="max-w-xs">
               <div
-                className={`p-3 rounded-lg shadow ${msg.isOwn
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-white text-gray-800 border border-gray-200'
-                  }`}
+                className={`p-3 rounded-lg shadow ${
+                  msg.isOwn ? 'bg-blue-500 text-white' : 'bg-white text-gray-800 border border-gray-200'
+                }`}
               >
-                {/* Name - Only show if not the sender, inside the box */}
                 {!msg.isOwn && (
                   <div className="text-xs font-semibold text-gray-500 mb-1">
-                    {msg.name}
+                    {msg.name || 'Unknown'}
                   </div>
                 )}
-                {/* Message */}
                 <p className="text-base">{msg.text}</p>
               </div>
             </div>
@@ -136,8 +128,6 @@ const Chat = () => {
         ))}
         <div ref={messagesEndRef} />
       </div>
-
-      {/* Input Area */}
       <div className="p-4 border-t border-gray-200">
         <div className="flex items-center">
           <input
@@ -146,11 +136,11 @@ const Chat = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
             className="flex-1 p-2 border border-blue-500 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
-            placeholder={`${name} Type a message...`}
+            placeholder={name ? `${name} Type a message...` : 'Type a message...'}
           />
           <button
             onClick={sendMessage}
-            className="bg-blue-500 text-white p-2 px-4 border border-blue-500 rounded-r-lg hover:bg-blue-600 transition"
+            className="bg-blue-500 text-white p-2 px-4 rounded-r-lg hover:bg-blue-600 transition"
           >
             Send
           </button>

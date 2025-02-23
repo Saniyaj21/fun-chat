@@ -1,5 +1,6 @@
 'use client'; // Add this directive to make it a Client Component
 
+import { SignedIn, SignedOut, SignInButton, SignOutButton, UserButton } from '@clerk/nextjs';
 import React, { useState, useEffect } from 'react';
 
 const Page = () => {
@@ -53,6 +54,14 @@ const Page = () => {
                         className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
+                <SignedIn>
+                    {/* <UserButton /> */}
+                    <SignOutButton />
+                </SignedIn>
+
+                <SignedOut>
+                    <SignInButton />
+                </SignedOut>
             </div>
         </div>
     );
