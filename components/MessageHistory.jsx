@@ -82,6 +82,31 @@ const MessageHistory = () => {
                   >
                     {msg.name}  <span className='opacity-50'>[{formatDate(msg.timestamp)}]</span>
                   </div>
+                  
+                  {
+                    // Show only for direct messages
+                    msg.room && (
+                      <div
+                        className={`text-xs font-semibold mb-1 text-gray-500'
+                          }`}
+                      >
+                        Room: {msg.room}
+                      </div>
+                    )
+                  }
+                  {
+                    // Show only for direct messages
+                    msg.email && (
+                      <div
+                        className={`text-xs font-semibold mb-1 text-gray-500'
+                          }`}
+                      >
+                        Room: {msg.email}
+                      </div>
+                    )
+                  }
+                  
+                  
                   {/* Message */}
                   <p className="text-base">{msg.text}</p>
                   {/* Timestamp */}
