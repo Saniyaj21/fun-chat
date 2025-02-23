@@ -103,7 +103,7 @@ const Chat = () => {
       <div className="bg-blue-500 text-white p-4 rounded-t-lg flex justify-between items-center">
         <h2 className="text-lg font-semibold">Global Chat </h2>
         <span className="bg-blue-700 px-3 py-1 rounded-full text-sm">
-          {activeUsers} Active Users
+          {activeUsers} Online
         </span>
       </div>
 

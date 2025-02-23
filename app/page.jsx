@@ -9,7 +9,7 @@ const Page = () => {
       {/* Navbar */}
 
       {/* Main Content */}
-      <main className="flex-1 flex items-center justify-center p-2">
+      <main className="flex-1 flex items-end justify-center px-2">
         <Chat />
       </main>
     </div>
