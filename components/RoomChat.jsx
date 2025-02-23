@@ -60,8 +60,10 @@ const RoomChat = () => {
   };
 
   const sendMessage = () => {
+    if (!isSignedIn || !user?.primaryEmailAddress?.emailAddress) return;
+   
     if (input.trim() && name) {
-      const messageData = { text: input, name, id };
+      const messageData = { text: input, name, id, email:user.primaryEmailAddress.emailAddress, room:selectedRoom?.name };
       socket.emit('roomMessage', messageData);
       setMessages((prev) => [...prev, { text: input, name, isOwn: true }]);
       setInput('');
