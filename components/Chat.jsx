@@ -13,6 +13,8 @@ const Chat = () => {
   const [name, setName] = useState(''); // Empty initial state
   const [showNamePopup, setShowNamePopup] = useState(false); // Default false
   const messagesEndRef = useRef(null);
+  const [typingUsers, setTypingUsers] = useState([]);
+  const [typingTimeout, setTypingTimeout] = useState(null);
 
   useEffect(() => {
     const storedName = typeof window !== 'undefined' ? localStorage.getItem('chatName') : null;
@@ -38,10 +40,23 @@ const Chat = () => {
       setActiveUserSocketId(socket.id);
     });
 
+    socket.on('typing', (user) => {
+      setTypingUsers((prev) => {
+        if (!prev.includes(name)) return [...prev, user];
+        return prev;
+      });
+    });
+
+    socket.on('stopTyping', (user) => {
+      setTypingUsers((prev) => prev.filter((u) => u !== user));
+    });
+
     return () => {
       socket.off('message');
       socket.off('activeUsers');
       socket.off('connect');
+      socket.off('typing');
+      socket.off('stopTyping');
     };
   }, [activeUserSocketId]); // No dependency on name here, only initial setup
 
@@ -64,6 +79,24 @@ const Chat = () => {
       setMessages((prev) => [...prev, { text: input, name, isOwn: true }]);
       setInput('');
     }
+  };
+
+  const handleTyping = (e) => {
+    setInput(e.target.value);
+
+    if (!socket) return;
+
+    socket.emit('typing', { user: name });
+
+    // Clear previous timeout
+    if (typingTimeout) clearTimeout(typingTimeout);
+
+    // Set new timeout for stopTyping
+    const timeout = setTimeout(() => {
+      socket.emit('stopTyping', { user: name });
+    }, 2000);
+
+    setTypingTimeout(timeout);
   };
 
 
@@ -134,12 +167,20 @@ const Chat = () => {
         ))}
         <div ref={messagesEndRef} />
       </div>
+      {/* Typing Feedback */}
+      <div className="min-h-[20px] mb-5">
+        {typingUsers.length > 0 && (
+          <p className="italic px-2 py-1 text-gray-500">
+            {typingUsers.join(', ')} {typingUsers.length > 1 ? 'are' : 'is'} typing...
+          </p>
+        )}
+      </div>
       <div className="p-4 border-t border-gray-200">
         <div className="flex items-center">
           <input
             type="text"
             value={input}
-            onChange={(e) => setInput(e.target.value)}
+            onChange={handleTyping}
             onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
             className="flex-1 p-2 border border-blue-500 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
             placeholder={name ? `${name} Type a message...` : 'Type a message...'}
