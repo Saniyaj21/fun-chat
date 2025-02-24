@@ -42,7 +42,7 @@ const Chat = () => {
 
     socket.on('typing', (user) => {
       setTypingUsers((prev) => {
-        if (!prev.includes(name)) return [...prev, user];
+        if (!prev.includes(user)) return [...prev, user];
         return prev;
       });
     });
@@ -62,7 +62,7 @@ const Chat = () => {
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, typingUsers]);
 
   const handleNameSubmit = (e) => {
     e.preventDefault();
@@ -86,14 +86,14 @@ const Chat = () => {
 
     if (!socket) return;
 
-    socket.emit('typing', { user: name });
+    socket.emit('typing', name);
 
     // Clear previous timeout
     if (typingTimeout) clearTimeout(typingTimeout);
 
     // Set new timeout for stopTyping
     const timeout = setTimeout(() => {
-      socket.emit('stopTyping', { user: name });
+      socket.emit('stopTyping', name);
     }, 2000);
 
     setTypingTimeout(timeout);
