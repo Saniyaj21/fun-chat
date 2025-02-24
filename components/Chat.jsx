@@ -112,15 +112,14 @@ const Chat = () => {
           >
             <div className="max-w-xs">
               <div
-                className={`p-3 rounded-lg shadow ${
-                  msg.isOwn ? 'bg-blue-500 text-white' : 'bg-white text-gray-800 border border-gray-200'
-                }`}
+                className={`p-3 rounded-lg min-w-40 shadow ${msg.isOwn ? 'bg-blue-500 text-white' : 'bg-white text-gray-800 border border-gray-200'
+                  }`}
               >
-                {!msg.isOwn && (
-                  <div className="text-xs font-semibold text-gray-500 mb-1">
-                    {msg.name || 'Unknown'}
-                  </div>
-                )}
+
+                <div className="text-xs font-semibold opacity-80  mb-1">
+                  {msg.name || 'Unknown'}
+                </div>
+                  <hr />
                 <p className="text-base">{msg.text}</p>
               </div>
             </div>
