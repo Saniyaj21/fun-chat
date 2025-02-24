@@ -3,11 +3,13 @@
 import { useState, useEffect, useRef } from 'react';
 import socket from '../lib/socket';
 import { FaGlobe } from 'react-icons/fa';
+import { useUser } from '@clerk/nextjs';
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [activeUsers, setActiveUsers] = useState(0);
+  const [activeUserSocketId, setActiveUserSocketId] = useState('');
   const [name, setName] = useState(''); // Empty initial state
   const [showNamePopup, setShowNamePopup] = useState(false); // Default false
   const messagesEndRef = useRef(null);
@@ -27,12 +29,13 @@ const Chat = () => {
       ]);
     });
 
-    socket.on('activeUsers', (count) => {
-      setActiveUsers(count);
+    socket.on('activeUsers', (globalOnlineUsersList) => {
+      setActiveUsers(globalOnlineUsersList.length);
     });
 
     socket.on('connect', () => {
-      console.log('Connected with socket ID:', socket.id);
+      // console.log('Connected with socket ID:', socket.id);
+      setActiveUserSocketId(socket.id);
     });
 
     return () => {
@@ -40,7 +43,7 @@ const Chat = () => {
       socket.off('activeUsers');
       socket.off('connect');
     };
-  }, []); // No dependency on name here, only initial setup
+  }, [activeUserSocketId]); // No dependency on name here, only initial setup
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -63,10 +66,6 @@ const Chat = () => {
     }
   };
 
-  // Render a loading state until client-side useEffect runs
-  // if (typeof window === 'undefined') {
-  //   return <div className="text-center p-4 text-blue-500">Loading...</div>;
-  // }
 
   if (showNamePopup) {
     return (
@@ -104,6 +103,14 @@ const Chat = () => {
           {activeUsers} Online
         </span>
       </div>
+      {
+        activeUserSocketId && <div className="flex items-center justify-center w-full">
+          <span className="text-gray-500 text-sm">
+            You are connected as {name} with socket ID: {activeUserSocketId}
+          </span>
+        </div>
+      }
+
       <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
         {messages.map((msg, index) => (
           <div
@@ -119,7 +126,7 @@ const Chat = () => {
                 <div className="text-xs font-semibold opacity-80  mb-1">
                   {msg.name || 'Unknown'}
                 </div>
-                  <hr />
+                <hr />
                 <p className="text-base">{msg.text}</p>
               </div>
             </div>
