@@ -140,13 +140,14 @@ const RoomChat = () => {
           <div key={index} className={`flex mb-4 ${msg.isOwn ? 'justify-end' : 'justify-start'}`}>
             <div className="max-w-xs">
               <div
-                className={`p-3 rounded-lg shadow ${
+                className={`p-3 rounded-lg min-w-40 shadow ${
                   msg.isOwn ? 'bg-blue-500 text-white' : 'bg-white text-gray-800 border border-gray-200'
                 }`}
               >
-                <div className={`text-xs font-semibold mb-1 ${msg.isOwn ? 'text-white' : 'text-gray-500'}`}>
+                <div className={`text-xs opacity-80 font-semibold mb-1 ${msg.isOwn ? 'text-white' : 'text-gray-500'}`}>
                   {msg.name}
                 </div>
+                <hr />
                 <p className="text-base">{msg.text}</p>
               </div>
             </div>
