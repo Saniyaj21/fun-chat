@@ -136,14 +136,14 @@ const Chat = () => {
           {activeUsers} Online
         </span>
       </div>
-      {
+      {/* {
         activeUserSocketId && <div className="flex items-center justify-center w-full">
           <span className="text-gray-500 text-sm">
             You are connected as {name} with socket ID: {activeUserSocketId}
           </span>
         </div>
       }
-
+ */}
       <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
         {messages.map((msg, index) => (
           <div
