@@ -12,16 +12,18 @@ const RoomChat = () => {
   const [activeUsers, setActiveUsers] = useState(0);
   const [name, setName] = useState('');
   const [showNamePopup, setShowNamePopup] = useState(false);
-  const [copied, setCopied] = useState(false); // Track if link was copied
+  const [copied, setCopied] = useState(false);
   const messagesEndRef = useRef(null);
   const { id } = useParams();
   const [selectedRoom, setSelectedRoom] = useState(null);
   const { isSignedIn, user, isLoaded } = useUser();
   const inputRef = useRef(null);
+  const [typingUsers, setTypingUsers] = useState([]);
+  const [typingTimeout, setTypingTimeout] = useState(null);
 
   useEffect(() => {
-    if (!isLoaded) return; // Wait for Clerk to load
-    if (!isSignedIn) return; // Don’t proceed if not signed in
+    if (!isLoaded) return;
+    if (!isSignedIn) return;
 
     const storedName = typeof window !== 'undefined' ? localStorage.getItem('chatName') : '';
     if (storedName) {
@@ -37,17 +39,31 @@ const RoomChat = () => {
       setMessages((prev) => [...prev, { ...message, isOwn: message.name === storedName }]);
     });
 
-    socket.on('roomActiveUsers', (count) => setActiveUsers(count)); // Updated to roomActiveUsers
+    socket.on('roomActiveUsers', (count) => setActiveUsers(count));
+
+    // Room-specific typing events
+    socket.on('roomTyping', (user) => {
+      setTypingUsers((prev) => {
+        if (!prev.includes(user)) return [...prev, user];
+        return prev;
+      });
+    });
+
+    socket.on('roomStopTyping', (user) => {
+      setTypingUsers((prev) => prev.filter((u) => u !== user));
+    });
 
     return () => {
       socket.off('roomMessage');
       socket.off('roomActiveUsers');
+      socket.off('roomTyping');
+      socket.off('roomStopTyping');
     };
   }, [id, isLoaded, isSignedIn, user]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, typingUsers]);
 
   const handleNameSubmit = (e) => {
     e.preventDefault();
@@ -68,8 +84,24 @@ const RoomChat = () => {
       socket.emit('roomMessage', messageData);
       setMessages((prev) => [...prev, { text: input, name, isOwn: true }]);
       setInput('');
-      inputRef.current?.focus()
+      inputRef.current?.focus();
     }
+  };
+
+  const handleTyping = (e) => {
+    setInput(e.target.value);
+
+    if (!socket || !name || !id) return;
+
+    socket.emit('roomTyping', { user: name, roomId: id });
+
+    if (typingTimeout) clearTimeout(typingTimeout);
+
+    const timeout = setTimeout(() => {
+      socket.emit('roomStopTyping', { user: name, roomId: id });
+    }, 1000);
+
+    setTypingTimeout(timeout);
   };
 
   const fetchRoomById = async (id) => {
@@ -81,7 +113,7 @@ const RoomChat = () => {
         throw new Error('Room not found');
       }
     } catch (err) {
-      console.log(err);
+      // console.log(err);
       setSelectedRoom(null);
     }
   };
@@ -93,12 +125,11 @@ const RoomChat = () => {
         member_email: user.primaryEmailAddress.emailAddress,
         room_id: id,
       });
-      console.log('Joined room:', response.data);
+      // console.log('Joined room:', response.data);
     } catch (err) {
-      console.log('Error joining room:', err);
+      // console.log('Error joining room:', err);
     }
   };
-
 
   if (!isLoaded) return <div className="text-center p-4 text-blue-500">Loading user data...</div>;
   if (!isSignedIn) return <div className="text-center p-4 text-red-500">Please sign in to join the room</div>;
@@ -131,9 +162,11 @@ const RoomChat = () => {
       <div className="bg-blue-500 text-white p-2 rounded-t-lg flex flex-wrap justify-between items-center">
         <h2 className="text-lg font-semibold">Room: {selectedRoom?.name}</h2>
         <div className="flex space-x-2">
-
           <span className="bg-green-700 px-3 py-1 rounded-full text-sm">
             {selectedRoom?.members?.length} Members
+          </span>
+          <span className="bg-green-700 px-3 py-1 rounded-full text-sm">
+            {activeUsers} Online
           </span>
         </div>
       </div>
@@ -142,8 +175,7 @@ const RoomChat = () => {
           <div key={index} className={`flex mb-4 ${msg.isOwn ? 'justify-end' : 'justify-start'}`}>
             <div className="max-w-xs">
               <div
-                className={`p-3 rounded-lg min-w-40 shadow ${msg.isOwn ? 'bg-blue-500 text-white' : 'bg-white text-gray-800 border border-gray-200'
-                  }`}
+                className={`p-3 rounded-lg min-w-40 shadow ${msg.isOwn ? 'bg-blue-500 text-white' : 'bg-white text-gray-800 border border-gray-200'}`}
               >
                 <div className={`text-xs opacity-80 font-semibold mb-1 ${msg.isOwn ? 'text-white' : 'text-gray-500'}`}>
                   {msg.name}
@@ -157,7 +189,7 @@ const RoomChat = () => {
         <div ref={messagesEndRef} />
       </div>
       <div className="px-4 py-2 fixed bottom-0 left-0 w-full">
-        <div className='max-w-2xl m-auto'>
+        <div className="max-w-2xl m-auto">
           {/* Typing Feedback */}
           <div className="min-h-[20px]">
             {typingUsers.length > 0 && (
@@ -166,14 +198,13 @@ const RoomChat = () => {
               </p>
             )}
           </div>
-
           <div className="flex items-center w-full m-auto">
             <input
               type="text"
               ref={inputRef}
               autoFocus
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={handleTyping}
               onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
               className="flex-1 p-2 border border-blue-500 rounded-l-lg focus:outline-none"
               placeholder={`${name} Type a message...`}
