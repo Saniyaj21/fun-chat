@@ -79,9 +79,9 @@ const Chat = () => {
       socket.emit('message', messageData);
       setMessages((prev) => [...prev, { text: input, name, isOwn: true }]);
       setInput('');
-      setTimeout(() => {
-        inputRef.current?.focus()
-      }, 100)
+      inputRef.current?.focus()
+      // setTimeout(() => {
+      // }, 100)
     }
   };
 
