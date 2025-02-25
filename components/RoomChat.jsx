@@ -17,6 +17,7 @@ const RoomChat = () => {
   const { id } = useParams();
   const [selectedRoom, setSelectedRoom] = useState(null);
   const { isSignedIn, user, isLoaded } = useUser();
+  const inputRef = useRef(null);
 
   useEffect(() => {
     if (!isLoaded) return; // Wait for Clerk to load
@@ -67,6 +68,7 @@ const RoomChat = () => {
       socket.emit('roomMessage', messageData);
       setMessages((prev) => [...prev, { text: input, name, isOwn: true }]);
       setInput('');
+      inputRef.current?.focus()
     }
   };
 
@@ -125,7 +127,7 @@ const RoomChat = () => {
   }
 
   return (
-    <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg flex flex-col h-[80vh] mx-auto pt-2 px-2">
+    <div className="w-full max-w-2xl bg-white rounded-lg flex flex-col h-[80vh] mx-auto pt-2 px-2">
       <div className="bg-blue-500 text-white p-2 rounded-t-lg flex flex-wrap justify-between items-center">
         <h2 className="text-lg font-semibold">Room: {selectedRoom?.name}</h2>
         <div className="flex space-x-2">
@@ -135,7 +137,7 @@ const RoomChat = () => {
           </span>
         </div>
       </div>
-      <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+      <div className="flex-1 overflow-y-auto p-4">
         {messages.map((msg, index) => (
           <div key={index} className={`flex mb-4 ${msg.isOwn ? 'justify-end' : 'justify-start'}`}>
             <div className="max-w-xs">
@@ -155,19 +157,21 @@ const RoomChat = () => {
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center">
+      <div className="px-4 py-2 fixed bottom-0 left-0 w-full">
+        <div className="flex items-center w-full max-w-2xl m-auto">
           <input
             type="text"
+            ref={inputRef}
+            autoFocus
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-            className="flex-1 p-2 border border-blue-500 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="flex-1 p-2 border border-blue-500 rounded-l-lg focus:outline-none"
             placeholder={`${name} Type a message...`}
           />
           <button
             onClick={sendMessage}
-            className="bg-blue-500 text-white p-2 px-4 rounded-r-lg hover:bg-blue-600 transition"
+            className="bg-blue-500 border border-blue-500 text-white p-2 px-6 rounded-r-lg hover:bg-blue-600 transition"
           >
             Send
           </button>

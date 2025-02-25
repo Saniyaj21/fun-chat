@@ -131,7 +131,7 @@ const Chat = () => {
   }
 
   return (
-    <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg flex flex-col h-[80vh]">
+    <div className="w-full max-w-2xl  rounded-lg flex flex-col h-[85vh]">
       <div className="bg-blue-500 text-white p-4 rounded-t-lg flex justify-between items-center">
         <h2 className="text-lg font-semibold flex justify-center items-center gap-2">
           <FaGlobe className="text-xl" />Chat
@@ -140,15 +140,8 @@ const Chat = () => {
           {activeUsers} Online
         </span>
       </div>
-      {/* {
-        activeUserSocketId && <div className="flex items-center justify-center w-full">
-          <span className="text-gray-500 text-sm">
-            You are connected as {name} with socket ID: {activeUserSocketId}
-          </span>
-        </div>
-      }
- */}
-      <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+
+      <div className="flex-1 overflow-y-auto p-4 ">
         {messages.map((msg, index) => (
           <div
             key={index}
@@ -172,28 +165,28 @@ const Chat = () => {
         <div ref={messagesEndRef} />
       </div>
       {/* Typing Feedback */}
-      <div className="min-h-[20px]  bg-gray-50">
+      <div className="min-h-[20px]">
         {typingUsers.length > 0 && (
           <p className="italic px-4 py-1 text-sm text-gray-500">
             {typingUsers.join(', ')} {typingUsers.length > 1 ? 'are' : 'is'} typing...
           </p>
         )}
       </div>
-      <div className="p-4 border-t border-gray-200">
-        <div className="flex items-center">
+      <div className="px-4 py-2 fixed bottom-0 left-0 w-full">
+        <div className="flex items-center w-full max-w-2xl m-auto">
           <input
             type="text"
-            ref={inputRef}
             value={input}
+            ref={inputRef}
             autoFocus
             onChange={handleTyping}
             onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-            className="flex-1 p-2 border border-blue-500 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="flex-1 p-2 border border-blue-500 rounded-l-lg focus:outline-none "
             placeholder={name ? `${name} Type a message...` : 'Type a message...'}
           />
           <button
             onClick={sendMessage}
-            className="bg-blue-500 text-white p-2 px-4 rounded-r-lg hover:bg-blue-600 transition"
+            className="bg-blue-500 h-full border border-blue-500 text-white p-2 px-6 rounded-r-lg hover:bg-blue-600 transition"
           >
             Send
           </button>
