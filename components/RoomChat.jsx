@@ -62,9 +62,9 @@ const RoomChat = () => {
 
   const sendMessage = () => {
     if (!isSignedIn || !user?.primaryEmailAddress?.emailAddress) return;
-   
+
     if (input.trim() && name) {
-      const messageData = { text: input, name, id, email:user.primaryEmailAddress.emailAddress, room:selectedRoom?.name };
+      const messageData = { text: input, name, id, email: user.primaryEmailAddress.emailAddress, room: selectedRoom?.name };
       socket.emit('roomMessage', messageData);
       setMessages((prev) => [...prev, { text: input, name, isOwn: true }]);
       setInput('');
@@ -131,7 +131,7 @@ const RoomChat = () => {
       <div className="bg-blue-500 text-white p-2 rounded-t-lg flex flex-wrap justify-between items-center">
         <h2 className="text-lg font-semibold">Room: {selectedRoom?.name}</h2>
         <div className="flex space-x-2">
-          
+
           <span className="bg-green-700 px-3 py-1 rounded-full text-sm">
             {selectedRoom?.members?.length} Members
           </span>
@@ -142,9 +142,8 @@ const RoomChat = () => {
           <div key={index} className={`flex mb-4 ${msg.isOwn ? 'justify-end' : 'justify-start'}`}>
             <div className="max-w-xs">
               <div
-                className={`p-3 rounded-lg min-w-40 shadow ${
-                  msg.isOwn ? 'bg-blue-500 text-white' : 'bg-white text-gray-800 border border-gray-200'
-                }`}
+                className={`p-3 rounded-lg min-w-40 shadow ${msg.isOwn ? 'bg-blue-500 text-white' : 'bg-white text-gray-800 border border-gray-200'
+                  }`}
               >
                 <div className={`text-xs opacity-80 font-semibold mb-1 ${msg.isOwn ? 'text-white' : 'text-gray-500'}`}>
                   {msg.name}
@@ -158,23 +157,34 @@ const RoomChat = () => {
         <div ref={messagesEndRef} />
       </div>
       <div className="px-4 py-2 fixed bottom-0 left-0 w-full">
-        <div className="flex items-center w-full max-w-2xl m-auto">
-          <input
-            type="text"
-            ref={inputRef}
-            autoFocus
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-            className="flex-1 p-2 border border-blue-500 rounded-l-lg focus:outline-none"
-            placeholder={`${name} Type a message...`}
-          />
-          <button
-            onClick={sendMessage}
-            className="bg-blue-500 border border-blue-500 text-white p-2 px-6 rounded-r-lg hover:bg-blue-600 transition"
-          >
-            Send
-          </button>
+        <div className='max-w-2xl m-auto'>
+          {/* Typing Feedback */}
+          <div className="min-h-[20px]">
+            {typingUsers.length > 0 && (
+              <p className="italic py-2 text-sm text-gray-500">
+                {typingUsers.join(', ')} {typingUsers.length > 1 ? 'are' : 'is'} typing...
+              </p>
+            )}
+          </div>
+
+          <div className="flex items-center w-full m-auto">
+            <input
+              type="text"
+              ref={inputRef}
+              autoFocus
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+              className="flex-1 p-2 border border-blue-500 rounded-l-lg focus:outline-none"
+              placeholder={`${name} Type a message...`}
+            />
+            <button
+              onClick={sendMessage}
+              className="bg-blue-500 border border-blue-500 text-white p-2 px-6 rounded-r-lg hover:bg-blue-600 transition"
+            >
+              Send
+            </button>
+          </div>
         </div>
       </div>
     </div>
