@@ -15,6 +15,7 @@ const Chat = () => {
   const messagesEndRef = useRef(null);
   const [typingUsers, setTypingUsers] = useState([]);
   const [typingTimeout, setTypingTimeout] = useState(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     const storedName = typeof window !== 'undefined' ? localStorage.getItem('chatName') : null;
@@ -78,6 +79,9 @@ const Chat = () => {
       socket.emit('message', messageData);
       setMessages((prev) => [...prev, { text: input, name, isOwn: true }]);
       setInput('');
+      setTimeout(() => {
+        inputRef.current?.focus()
+      }, 100)
     }
   };
 
@@ -94,7 +98,7 @@ const Chat = () => {
     // Set new timeout for stopTyping
     const timeout = setTimeout(() => {
       socket.emit('stopTyping', name);
-    }, 2000);
+    }, 1000);
 
     setTypingTimeout(timeout);
   };
@@ -168,9 +172,9 @@ const Chat = () => {
         <div ref={messagesEndRef} />
       </div>
       {/* Typing Feedback */}
-      <div className="min-h-[20px] mb-5">
+      <div className="min-h-[20px]  bg-gray-50">
         {typingUsers.length > 0 && (
-          <p className="italic px-2 py-1 text-gray-500">
+          <p className="italic px-4 py-1 text-sm text-gray-500">
             {typingUsers.join(', ')} {typingUsers.length > 1 ? 'are' : 'is'} typing...
           </p>
         )}
@@ -179,7 +183,9 @@ const Chat = () => {
         <div className="flex items-center">
           <input
             type="text"
+            ref={inputRef}
             value={input}
+            autoFocus
             onChange={handleTyping}
             onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
             className="flex-1 p-2 border border-blue-500 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
