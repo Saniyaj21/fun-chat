@@ -131,7 +131,7 @@ const Chat = () => {
   }
 
   return (
-    <div className="w-full max-w-2xl  rounded-lg flex flex-col h-[80vh]">
+    <div className="w-full max-w-2xl  rounded-lg flex flex-col h-[70vh]">
       <div className="bg-blue-500 text-white p-4 rounded-t-lg flex justify-between items-center">
         <h2 className="text-lg font-semibold flex justify-center items-center gap-2">
           <FaGlobe className="text-xl" />Chat
