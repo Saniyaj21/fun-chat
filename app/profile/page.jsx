@@ -1,6 +1,8 @@
 'use client'; // Add this directive to make it a Client Component
 
+import UserGuideLink from '@/components/UserGuideLink';
 import { SignedIn, SignedOut, SignInButton, SignOutButton } from '@clerk/nextjs';
+import Link from 'next/link';
 import React, { useState, useEffect } from 'react';
 
 const Page = () => {
@@ -63,8 +65,9 @@ const Page = () => {
                     />
                 </div>
 
+                <UserGuideLink />
                 {/* Show Previous Messages Toggle */}
-                <div className="flex flex-col">
+                <div className="flex flex-col mb-8">
                     <label htmlFor="showPreviousMessages" className="text-gray-700 font-medium">
                         Show Previous Messages
                     </label>
@@ -81,6 +84,7 @@ const Page = () => {
                         </span>
                     </div>
                 </div>
+
 
                 {/* Clerk Authentication Buttons */}
                 <SignedIn>

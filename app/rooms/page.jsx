@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { MdDeleteSweep } from "react-icons/md";
 import Link from 'next/link';
 import axios from 'axios';
 import { backendURL } from '@/lib/socket';
 import { useUser } from '@clerk/nextjs';
+import UserGuideLink from '@/components/UserGuideLink';
 
 const Rooms = () => {
   const [rooms, setRooms] = useState([]);
@@ -62,6 +64,24 @@ const Rooms = () => {
       setError(err.message);
     }
   };
+  const deleteRoom = async (id) => {
+
+    try {
+
+      if (confirm("Delete this room?")) {
+        const response = await axios.delete(`${backendURL}/api/rooms/${id}`)
+        if (response.data.success) {
+          fetchRooms()
+        } else {
+          throw new Error('Failed to create room');
+        }
+      }
+    }
+
+    catch (err) {
+      setError(err.message);
+    }
+  };
 
   const shareLink = (roomId) => {
     const url = `${window.location.origin}/rooms/${roomId}`;
@@ -104,7 +124,10 @@ const Rooms = () => {
       {/* Rooms List */}
       <div className="flex-1 overflow-y-auto p-4 bg-blue-50">
         {rooms.length === 0 ? (
-          <p className="text-center text-blue-400 opacity-50">No rooms found. Create one to start chatting!</p>
+          <>
+            <p className="text-center text-blue-400 opacity-50">No rooms found. Create one to start chatting!</p>
+            <UserGuideLink />
+          </>
         ) : (
           rooms.map((room) => (
             <div key={room._id} className="bg-blue-100 rounded-lg shadow p-2 mb-2">
@@ -116,11 +139,18 @@ const Rooms = () => {
               </Link>
               <div className="flex items-center gap-3 mt-2">
                 <button
+                  onClick={() => deleteRoom(room._id)}
+                  className="bg-red-500 mr-4 text-white px-3 py-1 rounded-full text-xl hover:bg-red-600 transition"
+                >
+                  <MdDeleteSweep />
+                </button>
+                <button
                   onClick={() => shareLink(room._id)}
                   className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm hover:bg-blue-600 transition"
                 >
                   Copy Link
                 </button>
+
                 {copiedRoomId === room._id && (
                   <span className="text-xs text-blue-600 opacity-75">Link Copied, Share now.</span>
                 )}
