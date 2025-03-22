@@ -31,7 +31,7 @@ const RoomChat = () => {
     const previousMessagesToggle = typeof window !== 'undefined' ? localStorage.getItem('showPreviousMessages') : "false";
     if (storedName) {
       setName(storedName);
-      console.log(typeof(previousMessagesToggle));
+      // console.log(typeof(previousMessagesToggle));
       
       setShowPreviousMessages(previousMessagesToggle);
       fetchRoomById(id);
@@ -60,7 +60,7 @@ const RoomChat = () => {
       setTypingUsers((prev) => prev.filter((u) => u !== user));
     });
 
-    console.log("load messages for room " + id)
+    // console.log("load messages for room " + id)
 
 
     return () => {
@@ -75,7 +75,7 @@ const RoomChat = () => {
   const roomsMessages = async (id) => {
     try {
       const response = await axios.get(`${backendURL}/api/messages/${id}`);
-      console.log(response.data.messages);
+      // console.log(response.data.messages);
       if (showPreviousMessages == "true") {
 
         setMessages(response.data.messages)
