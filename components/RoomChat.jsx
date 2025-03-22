@@ -123,7 +123,7 @@ const RoomChat = () => {
 
     const timeout = setTimeout(() => {
       socket.emit('roomStopTyping', { user: name, roomId: id });
-    }, 1000);
+    }, 100);
 
     setTypingTimeout(timeout);
   };

@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from 'react';
 import socket from '../lib/socket';
 import { FaGlobe } from 'react-icons/fa';
 import { useUser } from '@clerk/nextjs';
+import Link from 'next/link';
+import UserGuideLink from './UserGuideLink';
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
@@ -140,6 +142,8 @@ const Chat = () => {
           {activeUsers} Online
         </span>
       </div>
+
+      <p className='opacity-70 text-center py-2 flex items-center'>Messages are temporay. <UserGuideLink/></p>
 
       <div className="flex-1 overflow-y-auto px-4 py-2 ">
         {messages.map((msg, index) => (
