@@ -1,10 +1,11 @@
 'use client'; // Add this directive to make it a Client Component
 
-import { SignedIn, SignedOut, SignInButton, SignOutButton, UserButton } from '@clerk/nextjs';
+import { SignedIn, SignedOut, SignInButton, SignOutButton } from '@clerk/nextjs';
 import React, { useState, useEffect } from 'react';
 
 const Page = () => {
     const [name, setName] = useState('');
+    const [showPreviousMessages, setShowPreviousMessages] = useState(true);
     const [isMounted, setIsMounted] = useState(false);
 
     // Run only on client side after mount
@@ -12,18 +13,25 @@ const Page = () => {
         setIsMounted(true);
         // Only access localStorage after component mounts on client
         const storedName = localStorage.getItem('chatName') || '';
+        const storedShowPreviousMessages = localStorage.getItem('showPreviousMessages') === 'true'; // Convert to boolean
         setName(storedName);
+        setShowPreviousMessages(storedShowPreviousMessages);
     }, []);
 
-    // Update localStorage when name changes (only on client)
+    // Update localStorage when name or showPreviousMessages changes (only on client)
     useEffect(() => {
         if (isMounted) {
             localStorage.setItem('chatName', name);
+            localStorage.setItem('showPreviousMessages', showPreviousMessages);
         }
-    }, [name, isMounted]);
+    }, [name, showPreviousMessages, isMounted]);
 
     const handleNameChange = (e) => {
         setName(e.target.value);
+    };
+
+    const handleShowPreviousMessagesChange = (e) => {
+        setShowPreviousMessages(e.target.checked); // Update state based on checkbox
     };
 
     // Don't render anything until mounted on client to avoid hydration mismatches
@@ -44,7 +52,7 @@ const Page = () => {
                     <label htmlFor="nameInput" className="text-gray-700 font-medium">
                         Your Name
                     </label>
-                    <span className='opacity-50'>Just type it will be auto save.</span>
+                    <span className="opacity-50">Just type, it will auto-save.</span>
                     <input
                         id="nameInput"
                         type="text"
@@ -54,11 +62,30 @@ const Page = () => {
                         className="p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
+
+                {/* Show Previous Messages Toggle */}
+                <div className="flex flex-col">
+                    <label htmlFor="showPreviousMessages" className="text-gray-700 font-medium">
+                        Show Previous Messages
+                    </label>
+                    <div className="flex items-center gap-2">
+                        <input
+                            id="showPreviousMessages"
+                            type="checkbox"
+                            checked={showPreviousMessages}
+                            onChange={handleShowPreviousMessagesChange}
+                            className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        />
+                        <span className="text-gray-700">
+                            {showPreviousMessages ? 'Click to Hide' : 'Click to Show'}
+                        </span>
+                    </div>
+                </div>
+
+                {/* Clerk Authentication Buttons */}
                 <SignedIn>
-                    {/* <UserButton /> */}
                     <SignOutButton />
                 </SignedIn>
-
                 <SignedOut>
                     <SignInButton />
                 </SignedOut>

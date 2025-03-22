@@ -5,6 +5,7 @@ import socket, { backendURL } from '../lib/socket';
 import { useParams } from 'next/navigation';
 import axios from 'axios';
 import { useUser } from '@clerk/nextjs';
+import { formatTimeAgo } from '@/helpers/dayAgo';
 
 const RoomChat = () => {
   const [messages, setMessages] = useState([]);
@@ -20,16 +21,22 @@ const RoomChat = () => {
   const inputRef = useRef(null);
   const [typingUsers, setTypingUsers] = useState([]);
   const [typingTimeout, setTypingTimeout] = useState(null);
+  const [showPreviousMessages, setShowPreviousMessages] = useState(true);
 
   useEffect(() => {
     if (!isLoaded) return;
     if (!isSignedIn) return;
 
     const storedName = typeof window !== 'undefined' ? localStorage.getItem('chatName') : '';
+    const previousMessagesToggle = typeof window !== 'undefined' ? localStorage.getItem('showPreviousMessages') : "false";
     if (storedName) {
       setName(storedName);
+      // console.log(typeof(previousMessagesToggle));
+      
+      setShowPreviousMessages(previousMessagesToggle);
       fetchRoomById(id);
       joinRoom();
+      roomsMessages(id)
       socket.emit('joinRoom', id);
     } else {
       setShowNamePopup(true);
@@ -53,13 +60,30 @@ const RoomChat = () => {
       setTypingUsers((prev) => prev.filter((u) => u !== user));
     });
 
+    // console.log("load messages for room " + id)
+
+
     return () => {
       socket.off('roomMessage');
       socket.off('roomActiveUsers');
       socket.off('roomTyping');
       socket.off('roomStopTyping');
     };
-  }, [id, isLoaded, isSignedIn, user]);
+  }, [id, isLoaded, isSignedIn, user, showPreviousMessages]);
+
+
+  const roomsMessages = async (id) => {
+    try {
+      const response = await axios.get(`${backendURL}/api/messages/${id}`);
+      // console.log(response.data.messages);
+      if (showPreviousMessages == "true") {
+
+        setMessages(response.data.messages)
+      }
+
+    } catch (err) {
+    }
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -172,14 +196,15 @@ const RoomChat = () => {
       </div>
       <div className="flex-1 overflow-y-auto p-4">
         {messages.map((msg, index) => (
-          <div key={index} className={`flex mb-4 ${msg.isOwn ? 'justify-end' : 'justify-start'}`}>
+          <div key={index} className={`flex mb-4 ${msg.email == user.primaryEmailAddress.emailAddress || msg.isOwn ? 'justify-end' : 'justify-start'}`}>
             <div className="max-w-xs">
               <div
-                className={`p-3 rounded-lg min-w-40 shadow ${msg.isOwn ? 'bg-blue-500 text-white' : 'bg-white text-gray-800 border border-gray-200'}`}
+                className={`p-3 rounded-lg min-w-40 shadow ${msg.email == user.primaryEmailAddress.emailAddress || msg.isOwn ? 'bg-blue-500 text-white' : 'bg-white text-gray-800 border border-gray-200'}`}
               >
-                <div className={`text-xs opacity-80 font-semibold mb-1 ${msg.isOwn ? 'text-white' : 'text-gray-500'}`}>
-                  {msg.name}
+                <div className={`text-xs flex justify-between opacity-80 font-semibold mb-1 ${msg.email == user.primaryEmailAddress.emailAddress || msg.isOwn ? 'text-white' : 'text-gray-500'}`}>
+                 <span> {msg.name}</span> <span>{formatTimeAgo(msg?.timestamp)}</span>
                 </div>
+                
                 <hr />
                 <p className="text-base">{msg.text}</p>
               </div>
