@@ -6,6 +6,8 @@ import { useParams } from 'next/navigation';
 import axios from 'axios';
 import { useUser } from '@clerk/nextjs';
 import { formatTimeAgo } from '@/helpers/dayAgo';
+import { FaUserGroup } from "react-icons/fa6";
+import LiveTimeAgo from './LiveTimeAgo';
 
 const RoomChat = () => {
   const [messages, setMessages] = useState([]);
@@ -182,18 +184,19 @@ const RoomChat = () => {
   }
 
   return (
-    <div className="w-full max-w-2xl bg-white rounded-lg flex flex-col h-[78vh] mx-auto pt-2 px-2">
-      <div className="bg-blue-500 text-white p-2 rounded-t-lg flex flex-wrap justify-between items-center">
-        <h2 className="text-lg font-semibold">Room: {selectedRoom?.name}</h2>
-        <div className="flex space-x-2">
-          <span className="bg-green-700 px-3 py-1 rounded-full text-sm">
-            {selectedRoom?.members?.length} Members
+    <div className="w-full max-w-2xl bg-white rounded-lg flex flex-col h-[78vh] mx-auto pt-0 px-2">
+      <div className=" text-blue-500 p-2 rounded-t-lg flex flex-wrap justify-between items-center">
+        <h2 className="text-lg font-semibold">{selectedRoom?.name}</h2>
+        <div className="flex space-x-2 text-white">
+          <span className="bg-green-700 px-3 py-1 rounded-full text-sm flex items-center gap-1">
+          <FaUserGroup/> {selectedRoom?.members?.length} 
           </span>
           <span className="bg-green-700 px-3 py-1 rounded-full text-sm">
-            {activeUsers} Online
+            {activeUsers} On
           </span>
         </div>
       </div>
+      <hr />
       <div className="flex-1 overflow-y-auto p-4">
         {messages.map((msg, index) => (
           <div key={index} className={`flex mb-4 ${msg.email == user.primaryEmailAddress.emailAddress || msg.isOwn ? 'justify-end' : 'justify-start'}`}>
@@ -202,11 +205,12 @@ const RoomChat = () => {
                 className={`p-3 rounded-lg min-w-40 shadow ${msg.email == user.primaryEmailAddress.emailAddress || msg.isOwn ? 'bg-blue-500 text-white' : 'bg-white text-gray-800 border border-gray-200'}`}
               >
                 <div className={`text-xs flex justify-between opacity-80 font-semibold mb-1 ${msg.email == user.primaryEmailAddress.emailAddress || msg.isOwn ? 'text-white' : 'text-gray-500'}`}>
-                 <span> {msg.name}</span> <span>{formatTimeAgo(msg?.timestamp)}</span>
+                 <span> {msg.name}</span> 
                 </div>
                 
                 <hr />
                 <p className="text-base">{msg.text}</p>
+                <p className="text-xs text-right opacity-80 font-semibold"><LiveTimeAgo timestamp={msg?.timestamp} /></p>
               </div>
             </div>
           </div>

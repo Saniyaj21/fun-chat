@@ -13,16 +13,16 @@ export const formatTimeAgo= (timestamp)=> {
     };
 
     // Determine the appropriate time ago format
-    if (intervals.year > 1) return `${intervals.year} years ago`;
+    if (intervals.year > 1) return `${intervals.year}y ago`;
     if (intervals.year === 1) return `1 year ago`;
-    if (intervals.month > 1) return `${intervals.month} months ago`;
+    if (intervals.month > 1) return `${intervals.month}m ago`;
     if (intervals.month === 1) return `1 month ago`;
-    if (intervals.day > 1) return `${intervals.day} days ago`;
+    if (intervals.day > 1) return `${intervals.day}d ago`;
     if (intervals.day === 1) return `1 day ago`;
-    if (intervals.hour > 1) return `${intervals.hour} hours ago`;
+    if (intervals.hour > 1) return `${intervals.hour}h ago`;
     if (intervals.hour === 1) return `1 hour ago`;
-    if (intervals.minute > 1) return `${intervals.minute} minutes ago`;
-    if (intervals.minute === 1) return `1 minute ago`;
-    return `just now`;
+    if (intervals.minute > 1) return `${intervals.minute}m ago`;
+    if (intervals.minute === 1) return `1m ago`;
+    return `now`;
 }
 

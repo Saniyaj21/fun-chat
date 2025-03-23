@@ -44,9 +44,10 @@ const Page = () => {
     return (
         <div className="w-full max-w-2xl bg-white rounded-lg shadow-lg flex flex-col h-[90vh] mx-auto pt-2 px-2">
             {/* Header */}
-            <div className="bg-blue-500 text-white p-4 rounded-t-lg">
-                <h2 className="text-lg font-semibold">Profile</h2>
+            <div className=" text-blue-500 py-2 px-4 rounded-t-lg">
+                <h2 className="text-lg font-semibold">Your Profile</h2>
             </div>
+            <hr />
 
             {/* Name Input Section */}
             <div className="p-4 flex flex-col gap-4">

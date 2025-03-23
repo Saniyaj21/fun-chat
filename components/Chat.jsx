@@ -6,6 +6,7 @@ import { FaGlobe } from 'react-icons/fa';
 import { useUser } from '@clerk/nextjs';
 import Link from 'next/link';
 import UserGuideLink from './UserGuideLink';
+import LiveTimeAgo from './LiveTimeAgo';
 
 const Chat = () => {
   const [messages, setMessages] = useState([]);
@@ -18,11 +19,14 @@ const Chat = () => {
   const [typingUsers, setTypingUsers] = useState([]);
   const [typingTimeout, setTypingTimeout] = useState(null);
   const inputRef = useRef(null);
+  // const [now, setNow] = useState(null);
 
   useEffect(() => {
     const storedName = typeof window !== 'undefined' ? localStorage.getItem('chatName') : null;
+    // const timeNow = typeof window !== 'undefined' ? new Date().toISOString() : null;
     if (storedName) {
       setName(storedName);
+      // setNow(timeNow)
     } else {
       setShowNamePopup(true); // Show popup only on client if no name
     }
@@ -134,16 +138,17 @@ const Chat = () => {
 
   return (
     <div className="w-full max-w-2xl  rounded-lg flex flex-col h-[78vh]">
-      <div className="bg-blue-500 text-white p-4 rounded-t-lg flex justify-between items-center">
+      <div className=" text-blue-500 py-2 px-2 rounded-t-lg flex justify-between items-center">
         <h2 className="text-lg font-semibold flex justify-center items-center gap-2">
-          <FaGlobe className="text-xl" />Chat
+          Global Chat
         </h2>
-        <span className="bg-green-700 px-3 py-1 rounded-full text-sm">
+        <span className="bg-green-700 text-white px-3 py-1 rounded-full text-sm">
           {activeUsers} Online
         </span>
       </div>
+      <hr />
 
-      <p className='opacity-70 text-center py-2 flex items-center'>Messages are temporay. <UserGuideLink/></p>
+      <p className='opacity-70 text-center px-2 flex items-center'>Messages are temporay here. <UserGuideLink/></p>
 
       <div className="flex-1 overflow-y-auto px-4 py-2 ">
         {messages.map((msg, index) => (
@@ -162,6 +167,8 @@ const Chat = () => {
                 </div>
                 <hr />
                 <p className="text-base">{msg.text}</p>
+                {/* <p className="text-xs text-right opacity-80 font-semibold"><LiveTimeAgo timestamp={msg?.timestamp || timeNow} /></p> */}
+             
               </div>
             </div>
           </div>
