@@ -125,7 +125,7 @@ const RoomChat = () => {
 
     const timeout = setTimeout(() => {
       socket.emit('roomStopTyping', { user: name, roomId: id });
-    }, 100);
+    }, 1000);
 
     setTypingTimeout(timeout);
   };
