@@ -111,7 +111,7 @@ const RoomChat = () => {
     if (input.trim() && name) {
       const messageData = { text: input, name, id, email: user.primaryEmailAddress.emailAddress, room: selectedRoom?.name };
       socket.emit('roomMessage', messageData);
-      setMessages((prev) => [...prev, { text: input, name, isOwn: true }]);
+      setMessages((prev) => [...prev, { text: input, name, isOwn: true , timestamp: new Date()}]);
       setInput('');
       inputRef.current?.focus();
     }
